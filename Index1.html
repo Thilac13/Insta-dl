@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Insta Saver</title>
+
+<!-- iOS PWA settings -->
+<link rel="apple-touch-icon" href="icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+<style>
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        background: #f9f9f9;
+        margin: 0; padding: 20px;
+        max-width: 500px; margin:auto;
+    }
+    h1 {
+        text-align: center;
+        color: #333;
+    }
+    input, button {
+        width: 100%;
+        padding: 14px;
+        margin-top: 10px;
+        border-radius: 12px;
+        border: 1px solid #ccc;
+        font-size: 16px;
+    }
+    button {
+        background: #007aff;
+        color: white;
+        border: none;
+        font-weight: bold;
+    }
+    .result {
+        margin-top: 20px;
+        padding: 10px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    }
+</style>
+</head>
+<body>
+
+<h1>Insta Saver</h1>
+
+<input id="linkInput" type="text" placeholder="Paste Instagram link here">
+<button onclick="detectType()">Detect Type</button>
+
+<div id="output" class="result" style="display:none;"></div>
+
+<script>
+function detectType() {
+    let url = document.getElementById('linkInput').value.trim();
+    if (!url) {
+        alert("Please paste a link");
+        return;
+    }
+
+    let type = "";
+    if (url.includes("/reel/")) type = "Reel";
+    else if (url.includes("/stories/")) type = "Story";
+    else if (url.includes("/p/")) type = "Post";
+    else type = "Unknown";
+
+    // Save to localStorage
+    let history = JSON.parse(localStorage.getItem("links")) || [];
+    history.unshift({url, type, date: new Date().toISOString()});
+    localStorage.setItem("links", JSON.stringify(history));
+
+    document.getElementById("output").style.display = "block";
+    document.getElementById("output").innerHTML = 
+        `<strong>Type:</strong> ${type}<br><small>${url}</small>`;
+}
+</script>
+
+</body>
+</html>
