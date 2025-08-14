@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>IG Stash</title>
+
+<!-- iOS PWA -->
+<link rel="apple-touch-icon" href="icon.png" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<link rel="manifest" href="manifest.webmanifest" />
+
+<style>
+  :root { --blue:#007aff; --bg:#f7f7f9; --card:#fff; --txt:#111; --muted:#666; }
+  html,body{height:100%}
+  body{
+    margin:0; font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg); color:var(--txt);
+  }
+  .app{max-width:680px;margin:0 auto;padding:16px 16px 48px}
+  .header{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:12px 0}
+  .title{font-size:20px;font-weight:700;letter-spacing:.2px}
+  .pill{font-size:12px;color:#fff;background:var(--blue);padding:6px 10px;border-radius:999px}
+  .card{background:var(--card);border-radius:18px;box-shadow:0 6px 24px rgba(0,0,0,.06);padding:16px;margin:12px 0}
+  .row{display:flex;gap:10px;align-items:center}
+  input[type=text]{
+    flex:1;border:1px solid #ddd;border-radius:14px;padding:14px 12px;font-size:16px;background:#fff;
+  }
+  button{
+    border:none;border-radius:14px;padding:14px 14px;font-weight:700;background:var(--blue);color:#fff;
+  }
+  .ghost{background:#e9eefb;color:#0b3b9c}
+  .muted{color:var(--muted);font-size:13px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px}
+  .cell{background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 4px 14px rgba(0,0,0,.06)}
+  .thumb{width:100%;height:180px;object-fit:cover;background:#eee}
+  .cell .meta{padding:10px;font-size:12px;color:#333;display:flex;justify-content:space-between;gap:8px}
+  .tag{font-size:11px;padding:2px 8px;border-radius:999px;background:#f0f2f6}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+  select{border:1px solid #ddd;border-radius:12px;padding:10px 12px;background:#fff}
+  .kicker{font-size:12px;color:var(--muted);margin-top:6px}
+  .actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+  .danger{background:#f43f5e}
+  .ok{background:#10b981}
+  .outline{background:#fff;border:1px solid #ddd;color:#111}
+  .footer{position:fixed;left:0;right:0;bottom:0;padding:12px;background:linear-gradient(180deg, rgba(247,247,249,0), rgba(247,247,249,1) 30%);}
+  .toast{position:fixed;left:50%;bottom:84px;transform:translateX(-50%);background:#111;color:#fff;padding:10px 14px;border-radius:12px;font-size:12px;display:none}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="title">IG Stash <span class="pill">PWA</span></div>
+    <button class="ghost" id="btnInstall" style="display:none">Install</button>
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <input id="url" type="text" autocapitalize="off" autocomplete="off" placeholder="Paste Instagram link (post / reel / story)" />
+      <button id="btnResolve">Detect & Fetch</button>
+    </div>
+    <div class="kicker">Tip: You can also paste multiple links separated by spaces or new lines.</div>
+    <div class="actions">
+      <button class="outline" id="btnConfig">Set Worker URL</button>
+      <button class="outline" id="btnExport">Export Library</button>
+      <button class="outline" id="btnImport">Import</button>
+      <input id="importFile" type="file" accept="application/json" style="display:none" />
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="toolbar">
+      <select id="filterUser"><option value="">All users</option></select>
+      <select id="filterType">
+        <option value="">All types</option>
+        <option value="Post">Post</option>
+        <option value="Reel">Reel</option>
+        <option value="Story">Story</option>
+      </select>
+      <button class="outline" id="btnClearFilter">Clear Filters</button>
+      <button class="danger" id="btnWipe">Wipe Local Library</button>
+    </div>
+    <div id="grid" class="grid"></div>
+  </div>
+
+  <div class="footer muted" style="text-align:center">Add to Home Screen for the best iOS experience.</div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script src="app.js"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js');
+    });
+  }
+</script>
+</body>
+</html>
